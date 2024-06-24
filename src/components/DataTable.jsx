@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Input, Pagination, Dropdown } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, TableHeader, TableRow, TableHeaderCell, TableBody, TableCell } from 'semantic-ui-react';
 import { getObservables } from '../api/Api';
 
 const pageSizeOptions = [
@@ -16,7 +16,7 @@ const DataTable = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [isFiltered, setFiltered] = useState(false);
     const [filters, setFilters] = useState({
-        issue: '',
+        issue_name: '',
         service_port: '',
         reported_date: '',
         observation: '',
@@ -68,7 +68,7 @@ const DataTable = () => {
                 (filters.ip_address === '' || item.ip_address.toLowerCase().includes(filters.ip_address.toLowerCase())) &&
                 (filters.impact === '' || item.impact.toLowerCase().includes(filters.impact.toLowerCase())) &&
                 (filters.recommendation === '' || item.recommendation.toLowerCase().includes(filters.recommendation.toLowerCase())) &&
-                (filters.remidation_team === '' || item.remidation_team.toLowerCase().includes(filters.remidation_team.toLowerCase()))
+                (filters.remidation_team === '' || item.remidation_team === filters.remidation_team)
             );
         });
         setFilteredData(filtered);
@@ -112,6 +112,18 @@ const DataTable = () => {
             text: 'Medium',
         }];
 
+    const remidationOptions = [
+        {
+            key: 0,
+            value: 'Application team',
+            text: 'Application team',
+        },
+        {
+            key: 1,
+            value: 'Patch team',
+            text: 'Patch team',
+        }];
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -129,9 +141,9 @@ const DataTable = () => {
             </div>
             <div style={{ overflow: 'scroll' }}>
                 <Table celled>
-                    <Table.Header>
-                        <Table.Row key={'header'}>
-                            <Table.HeaderCell>
+                    <TableHeader>
+                        <TableRow key={'header'}>
+                            <TableHeaderCell>
                                 Issue Name
                                 <Input
                                     name='issue_name'
@@ -140,8 +152,8 @@ const DataTable = () => {
                                     placeholder='Issue name'
                                     style={{ width: '100%' }}
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell width={10}>
+                            </TableHeaderCell>
+                            <TableHeaderCell width={10}>
                                 Service Port
                                 <Input
                                     name='service_port'
@@ -150,8 +162,8 @@ const DataTable = () => {
                                     placeholder='Service port'
                                     style={{ width: '100%' }}
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
                                 Report Date
                                 <Input
                                     name='reported_date'
@@ -160,8 +172,8 @@ const DataTable = () => {
                                     placeholder='Reported Date'
                                     style={{ width: '100%' }}
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
                                 Observation
                                 <Input
                                     name='observation'
@@ -170,21 +182,21 @@ const DataTable = () => {
                                     placeholder='Observation'
                                     style={{ width: '100%' }}
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
                                 Severity
                                 <Dropdown
                                     placeholder="Severity"
                                     fluid
                                     selection
-                                    options={severityOptions || ''}
+                                    options={severityOptions}
                                     name="severity"
-                                    value={filters.severity}
+                                    value={filters.severity || ''}
                                     onChange={handleFilterChange}
                                     clearable
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
                                 Ip Address
                                 <Input
                                     name='ip_address'
@@ -193,8 +205,8 @@ const DataTable = () => {
                                     placeholder='Ip Address'
                                     style={{ width: '100%' }}
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
                                 Impact
                                 <Input
                                     name='impact'
@@ -203,8 +215,8 @@ const DataTable = () => {
                                     placeholder='Reported Date'
                                     style={{ width: '100%' }}
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
                                 Recommendation
                                 <Input
                                     name='recommendation'
@@ -213,34 +225,37 @@ const DataTable = () => {
                                     placeholder='Recommendation'
                                     style={{ width: '100%' }}
                                 />
-                            </Table.HeaderCell>
-                            <Table.HeaderCell>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
                                 Remediation
-                                <Input
-                                    name='remidation_team'
+                                <Dropdown
+                                    placeholder="Remediation"
+                                    fluid
+                                    selection
+                                    options={remidationOptions}
+                                    name="remidation_team"
                                     value={filters.remidation_team || ''}
                                     onChange={handleFilterChange}
-                                    placeholder='Remediation'
-                                    style={{ width: '100%' }}
+                                    clearable
                                 />
-                            </Table.HeaderCell>
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {paginatedData.map(item => (
-                            <Table.Row key={item._id}>
-                                <Table.Cell>{item.issue_name}</Table.Cell>
-                                <Table.Cell>{item.service_port}</Table.Cell>
-                                <Table.Cell>{convertToDateString(item.reported_date)}</Table.Cell>
-                                <Table.Cell>{item.observation}</Table.Cell>
-                                <Table.Cell>{item.severity}</Table.Cell>
-                                <Table.Cell>{item.ip_address}</Table.Cell>
-                                <Table.Cell>{item.impact}</Table.Cell>
-                                <Table.Cell>{item.recommendation}</Table.Cell>
-                                <Table.Cell>{item.remidation_team}</Table.Cell>
-                            </Table.Row>
+                            <TableRow key={item._id}>
+                                <TableCell>{item.issue_name}</TableCell>
+                                <TableCell>{item.service_port}</TableCell>
+                                <TableCell>{convertToDateString(item.reported_date)}</TableCell>
+                                <TableCell>{item.observation}</TableCell>
+                                <TableCell>{item.severity}</TableCell>
+                                <TableCell>{item.ip_address}</TableCell>
+                                <TableCell>{item.impact}</TableCell>
+                                <TableCell>{item.recommendation}</TableCell>
+                                <TableCell>{item.remidation_team}</TableCell>
+                            </TableRow>
                         ))}
-                    </Table.Body>
+                    </TableBody>
                 </Table>
             </div>
         </div>
